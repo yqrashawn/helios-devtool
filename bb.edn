@@ -1,0 +1,11 @@
+{:paths ["dev"]
+ :deps  {medley/medley {:mvn/version "1.4.0"}
+         selmer/selmer {:mvn/version "1.12.50"}}
+ :tasks
+ {nrepl  x.nrepl/run
+  shadow x.shadow/run
+  cli    x.cli/run
+  css    {:task (clojure "-X:css")}
+  -start {:depends [;; nrepl
+                    shadow css cli]}
+  start  {:task (run '-start {:parallel true})}}}

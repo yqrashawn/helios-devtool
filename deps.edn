@@ -1,0 +1,69 @@
+{:path ["src" "dev"]
+
+ :deps
+ {http-kit/http-kit   {:mvn/version "2.5.3"}
+  metosin/reitit      {:mvn/version "0.5.18"}
+  ring/ring-defaults  {:mvn/version "0.3.3"}
+  mount/mount         {:mvn/version "0.1.16"}
+  yogthos/config      {:mvn/version "1.2.0"}
+  com.taoensso/timbre {:mvn/version "5.2.1"}
+  com.taoensso/sente  {:mvn/version "1.16.2"}
+  com.taoensso/encore {:mvn/version "3.22.0"}}
+ :aliases
+ {:cljs
+  {:extra-deps
+   {funcool/promesa            {:mvn/version "8.0.450"}
+    reagent/reagent            {:mvn/version "1.1.1"}
+    re-frame/re-frame          {:mvn/version "1.2.0"}
+    binaryage/oops             {:mvn/version "0.7.2"}
+    datascript/datascript      {:mvn/version "1.3.12"}
+    com.lambdaisland/glogi     {:mvn/version "1.1.144"}
+    binaryage/devtools         {:mvn/version "1.0.6"}
+    thheller/shadow-cljs       {:mvn/version "2.18.0"}
+    day8.re-frame/re-frame-10x {:mvn/version "1.2.7"}
+    day8.re-frame/tracing      {:mvn/version "0.6.2"}
+    girouette/girouette        {:mvn/version "0.0.7"}
+    girouette/processor        {:mvn/version "RELEASE"}}}
+  :css
+  {; clojure -X:css
+   :extra-deps {girouette/processor {:mvn/version "0.0.7"}}
+   :ns-default girouette.processor
+   :exec-fn    process
+   :exec-args
+   {:css           {:output-file "resources/client/public/css/compiled/main.css"}
+    :garden-fn     client.css.grammer/class-name->garden
+    :apply-classes client.css.core/composed-classes
+    :watch?        true
+    #_#_:dry-run? true}}
+
+  ;; native-image --initialize-at-build-time --enable-url-protocols=http --report-unsupported-elements-at-runtime --allow-incomplete-classpath --no-fallback --no-server -H:ConfigurationResourceRoots=resources -H:ResourceConfigurationFiles=resource-config.json -H:Name=target/devtool -jar target/client.jar
+  ;; clojure -X:native-image --verbose
+  :native-image
+  {:main-opts ["-m" "clj.native-image" "server.core"
+               "-jar target/client.jar"
+               "--initialize-at-build-time"
+               "--enable-url-protocols=http"
+               "--report-unsupported-elements-at-runtime"
+               "--allow-incomplete-classpath"
+               "--no-fallback"
+               "--no-server"
+               "-H:ConfigurationResourceRoots=resources"
+               "-H:ResourceConfigurationFiles=resource-config.json"
+               ;; ~(str "-H:ResourceConfigurationFiles="
+               ;;       (System/getProperty "user.dir")
+               ;;       (java.io.File/separator)
+               ;;       "resource-config.json")
+               "-H:Name=target/devtool"]
+   :jvm-opts  ["-Dclojure.compiler.direct-linking=true"]
+   :extra-deps
+   {clj.native-image/clj.native-image
+    {:git/url "https://github.com/taylorwood/clj.native-image.git"
+     :sha     "4604ae76855e09cdabc0a2ecc5a7de2cc5b775d6"}}}
+
+  ;; clojure -X:uberjar
+  :uberjar
+  {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+   :exec-fn      hf.depstar/uberjar
+   :exec-args    {:jar        "target/client.jar"
+                  :main-class server.core
+                  :aot        true}}}}

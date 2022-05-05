@@ -1,0 +1,71 @@
+{:deps  {:aliases [:cljs]}
+ :nrepl {:port 3114}
+
+ :jvm-opts ["-Xmx4G" "-Xms512m" "-XX:+UseSerialGC" "-XX:-OmitStackTraceInFastThrow"]
+ :log      {:level :info}
+
+ :build-defaults
+ {:build-hooks     []
+  :closure-defines {}
+  :compiler-options
+  {:infer-externs      :auto
+   :shadow-keywords    true
+   ;; https://github.com/thheller/shadow-cljs/blob/7fefe5b3f604ff11d33539e4899e160dd1ff6eb0/src/main/shadow/build/cljs_hacks.cljc#L859
+   :shadow-tweaks      true
+   ;; :cross-chunk-method-motion false
+   :output-feature-set :es-next
+   ;; :output-feature-set :es8
+   :warnings           {:undeclared-var false}}}
+
+ :http       {:port 3112 :host "localhost"}
+ :dev-http
+ {3111 "resources/client/public"}
+ :js-options {:js-package-dirs ["node_modules"]}
+
+ :builds
+ {:client
+  {:target        :browser
+   :output-dir    "resources/client/public/js/compiled"
+   :asset-path    "/js/compiled"
+   :module-loader true
+   :modules
+   {:shared {:entries []
+             :default true}
+    :main   {:init-fn    client.core/init
+             :depends-on #{:shared}}}
+   :devtools
+   {:preloads        [;; day8.re-frame-10x.preload
+                      cljs-devtool]
+    :console-support false}
+   :compiler-options
+   {:closure-defines
+    {re-frame.trace.trace-enabled?        true
+     day8.re-frame.tracing.trace-enabled? true}}
+   :dev
+   {}
+   :release
+   {:closure-defines {goog.DEBUG                 false
+                      goog.debug.LOGGING_ENABLED true}
+    :build-options
+    {:ns-aliases
+     {day8.re-frame.tracing day8.re-frame.tracing-stubs}}
+    :compiler-options
+    {:elide-asserts true}}}
+  :lib
+  {:target           :browser
+   :output-dir       "resources/lib"
+   :asset-path       "/"
+   :modules          {:main   {:entries [lib.core]}}
+   :compiler-options {:cross-chunk-method-motion false
+                      :infer-externs             :auto}
+   :devtools
+   {:preloads        [cljs-devtool]
+    :console-support false}
+   :release
+   {:closure-defines {goog.DEBUG                 false
+                      goog.debug.LOGGING_ENABLED true}
+    :build-options
+    {:ns-aliases
+     {day8.re-frame.tracing day8.re-frame.tracing-stubs}}
+    :compiler-options
+    {:elide-asserts true}}}}}

@@ -1,0 +1,12 @@
+{
+  "name": "helios-devtool",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:yqrashawn/helios-devtool.git",
+  "author": "yqrashawn <namy.19@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "shadow-cljs": "^2.18.0",
+    "highlight.js": "11.1.0"
+  }
+}
