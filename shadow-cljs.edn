@@ -19,7 +19,8 @@
 
  :http       {:port 3112 :host "localhost"}
  :dev-http
- {3111 "resources/client/public"}
+ {3111 "resources/client/public"
+  3115 "resources/lib/"}
  :js-options {:js-package-dirs ["node_modules"]}
 
  :builds
@@ -36,7 +37,8 @@
    :devtools
    {:preloads        [;; day8.re-frame-10x.preload
                       cljs-devtool]
-    :console-support false}
+    :console-support false
+    :devtools-url "http://localhost:3112"}
    :compiler-options
    {:closure-defines
     {re-frame.trace.trace-enabled?        true
@@ -52,15 +54,18 @@
     :compiler-options
     {:elide-asserts true}}}
   :lib
-  {:target           :browser
+  {:target           :esm
    :output-dir       "resources/lib"
-   :asset-path       "/"
-   :modules          {:main   {:entries [lib.core]}}
+   :modules          {:main
+                      {:exports
+                       {init lib.core/init}}}
    :compiler-options {:cross-chunk-method-motion false
                       :infer-externs             :auto}
+   :dev {:closure-defines {shadow.cljs.devtools.client.env/devtools-url "http://localhost:3112"}}
    :devtools
    {:preloads        [cljs-devtool]
-    :console-support false}
+    :console-support false
+    :devtools-url "http://localhost:3112"}
    :release
    {:closure-defines {goog.DEBUG                 false
                       goog.debug.LOGGING_ENABLED true}
