@@ -18,3 +18,5 @@ pom.xml.asc
 /resources/*/public/*/compiled
 /resources/lib/
 /resources/client/public/lib/
+/bb
+/bb.build_artifacts.txt

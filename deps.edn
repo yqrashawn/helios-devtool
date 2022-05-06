@@ -21,7 +21,9 @@
 
   ;; tools
   clj-commons/fs {:mvn/version "1.6.310"}
-  djblue/portal  {:mvn/version "0.25.0"}}
+  djblue/portal  {:mvn/version "0.25.0"}
+
+  com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}
 
  :aliases
  {:cljs
@@ -56,17 +58,13 @@
   {:main-opts ["-m" "clj.native-image" "server.core"
                "-jar target/client.jar"
                "--initialize-at-build-time"
+               "--link-at-build-time"
                "--enable-url-protocols=http"
                "--report-unsupported-elements-at-runtime"
-               "--allow-incomplete-classpath"
                "--no-fallback"
                "--no-server"
                "-H:ConfigurationResourceRoots=resources"
                "-H:ResourceConfigurationFiles=resource-config.json"
-               ;; ~(str "-H:ResourceConfigurationFiles="
-               ;;       (System/getProperty "user.dir")
-               ;;       (java.io.File/separator)
-               ;;       "resource-config.json")
                "-H:Name=target/devtool"]
    :jvm-opts  ["-Dclojure.compiler.direct-linking=true"]
    :extra-deps

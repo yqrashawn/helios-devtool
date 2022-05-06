@@ -2,10 +2,15 @@
  :deps  {medley/medley {:mvn/version "1.4.0"}
          selmer/selmer {:mvn/version "1.12.50"}}
  :tasks
- {nrepl  x.nrepl/run
-  shadow x.shadow/run
-  cli    x.cli/run
-  css    {:task (clojure "-X:css")}
-  -start {:depends [;; nrepl
-                    shadow css cli]}
-  start  {:task (run '-start {:parallel true})}}}
+ {uberjar {:task (clojure "-X:uberjar")}
+  graal   {:task (shell "native-image --enable-url-protocols=http --report-unsupported-elements-at-runtime --no-fallback --no-server -H:ConfigurationResourceRoots=resources -H:ResourceConfigurationFiles=resource-config.json -H:Name=./target/devtool -jar ./target/client.jar")}
+  -native {:depends [uberjar graal]}
+  native {:task (run '-native)}
+
+  nrepl   x.nrepl/run
+  shadow  x.shadow/run
+  cli     x.cli/run
+  css     {:task (clojure "-X:css")}
+  -start  {:depends [;; nrepl
+                     shadow css cli]}
+  start   {:task (run '-start {:parallel true})}}}

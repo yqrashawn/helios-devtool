@@ -56,6 +56,8 @@
      (wrap-defaults
       handler
       (-> site-defaults
+          (assoc-in [:params :multipart] false)
+          (assoc-in [:params :nested] false)
           (assoc-in [:static :files] "resources/client/public")
           (assoc-in [:static :resources] "resources/client/public")
           (assoc-in [:security :anti-forgery] false)))
