@@ -15,5 +15,6 @@ pom.xml.asc
 /.cpcache/
 /node_modules/
 /.shadow-cljs/
-/resources/client/
+/resources/*/public/*/compiled
 /resources/lib/
+/resources/client/public/lib/

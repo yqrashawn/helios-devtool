@@ -55,10 +55,11 @@
     {:elide-asserts true}}}
   :lib
   {:target           :esm
-   :output-dir       "resources/lib"
-   :modules          {:main
+   :output-dir    "resources/client/public/lib/compiled"
+   :modules          {:lib
                       {:exports
-                       {init lib.core/init}}}
+                       {init lib.core/init
+                        send lib.core/send}}}
    :compiler-options {:cross-chunk-method-motion false
                       :infer-externs             :auto}
    :dev {:closure-defines {shadow.cljs.devtools.client.env/devtools-url "http://localhost:3112"}}
