@@ -6,11 +6,14 @@
   "author": "yqrashawn <namy.19@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "shadow-cljs": "^2.18.0",
-    "highlight.js": "11.1.0"
+    "highlight.js": "11.1.0",
+    "react-window": "^1.8.7",
+    "shadow-cljs": "^2.18.0"
   },
   "dependencies": {
+    "@radix-ui/react-collapsible": "^0.1.6",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-json-view": "^1.21.3"
   }
 }

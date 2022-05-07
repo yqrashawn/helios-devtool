@@ -7,6 +7,7 @@
    ;; [re-pressed.core :as rp]
    ;; [breaking-point.core :as bp]
    [client.events :as events]
+   [client.db :as db]
    [client.routes :as routes]
    [client.views :as views]
    ;; [fgl.app.views :as views]

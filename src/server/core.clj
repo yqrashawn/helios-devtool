@@ -30,7 +30,8 @@
                      [:head (hiccup/include-css "/css/compiled/main.css")]
                      [:div#app]
                      [:div (hiccup/include-js "/js/compiled/shared.js")]
-                     [:div (hiccup/include-js "/js/compiled/main.js")])
+                     [:div (hiccup/include-js "/js/compiled/main.js")]
+                     [:head (hiccup/include-css "https://cdn.jsdelivr.net/npm/water.css@2/out/water.min.css")])
                     (response/response)
                     (response/header "content-type" "text/html")))}]])))
   :stop (socket/stop))

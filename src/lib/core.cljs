@@ -30,9 +30,9 @@
     ))
 (defn send [type data]
   (try
-    (chsk-send! (log/spy
-                 [(keyword "lib" "lib")
-                  {:type (keyword type)
-                   :data (js->clj data :keywordize-keys true)}]))
+    (chsk-send! [(keyword "lib" "lib")
+                 {:type (keyword type)
+                  :data {:payload (js->clj (-> data js/JSON.stringify js/JSON.parse) :keywordize-keys true)
+                         :time (.getTime (js/Date.))}}])
     (catch js/Error e
       (log/debug :error e))))

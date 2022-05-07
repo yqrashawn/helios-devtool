@@ -2,4 +2,6 @@
 
 (defn ui []
   [:header.grid-area-header
-   [:h1.text-5xl "Helios Devtool"]])
+   [:div.h-2vh]
+   ;; [:h1 "Helios Devtool"]
+   ])
