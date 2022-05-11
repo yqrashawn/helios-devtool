@@ -1,34 +1,40 @@
 {:paths ["src" "dev"]
 
  :deps
- {http-kit/http-kit         {:mvn/version "2.5.3"}
-  metosin/reitit            {:mvn/version "0.5.18"}
-  ring/ring-defaults        {:mvn/version "0.3.3"}
-  ring-logger/ring-logger   {:mvn/version "1.1.1"}
-  mount/mount               {:mvn/version "0.1.16"}
-  yogthos/config            {:mvn/version "1.2.0"}
-  com.taoensso/timbre       {:mvn/version "5.2.1"}
-  com.taoensso/sente        {:mvn/version "1.16.2"}
-  com.taoensso/encore       {:mvn/version "3.22.0"}
-  com.fzakaria/slf4j-timbre {:mvn/version "0.3.21"} ;; no undertow debug logs
-  hashp/hashp               {:mvn/version "0.2.1"}
-  thheller/shadow-cljs      {:mvn/version "2.18.0"}
+ {http-kit/http-kit   {:mvn/version "2.5.3"}
+  metosin/reitit      {:mvn/version "0.5.18"}
+  ring/ring-defaults  {:mvn/version "0.3.3"}
+  ;; ring-logger/ring-logger   {:mvn/version "1.1.1"}
+  mount/mount         {:mvn/version "0.1.16"}
+  yogthos/config      {:mvn/version "1.2.0"}
+  com.taoensso/timbre {:mvn/version "5.2.1"}
+  com.taoensso/sente  {:mvn/version "1.16.2"}
+  com.taoensso/encore {:mvn/version "3.22.0"}
+  ;; com.fzakaria/slf4j-timbre {:mvn/version "0.3.21"} ;; no undertow debug logs
+  ;; hashp/hashp               {:mvn/version "0.2.1"}
 
   ;; babashka
-  babashka/process  {:mvn/version "0.1.1"}
-  babashka/babashka {:mvn/version "0.8.2-SNAPSHOT"}
-  babashka/fs       {:mvn/version "0.1.4"}
+  ;; babashka/process  {:mvn/version "0.1.1"}
+  ;; babashka/babashka {:mvn/version "0.8.2-SNAPSHOT"}
+  ;; babashka/fs       {:mvn/version "0.1.4"}
 
   ;; tools
-  clj-commons/fs {:mvn/version "1.6.310"}
-  djblue/portal  {:mvn/version "0.25.0"}
+  ;; clj-commons/fs {:mvn/version "1.6.310"}
+  ;; djblue/portal  {:mvn/version "0.25.0"}
 
   com.github.clj-easy/graal-build-time {:mvn/version "0.1.4"}}
 
  :aliases
- {:cljs
+ {:bb
   {:extra-deps
-   {funcool/promesa            {:mvn/version "8.0.450"}
+   {;; babashka
+    babashka/process  {:mvn/version "0.1.1"}
+    babashka/babashka {:mvn/version "0.8.2-SNAPSHOT"}
+    babashka/fs       {:mvn/version "0.1.4"}}}
+  :cljs
+  {:extra-deps
+   {thheller/shadow-cljs       {:mvn/version "2.18.0"}
+    funcool/promesa            {:mvn/version "8.0.450"}
     reagent/reagent            {:mvn/version "1.1.1"}
     re-frame/re-frame          {:mvn/version "1.2.0"}
     re-posh/re-posh            {:mvn/version "0.3.3"}
@@ -53,21 +59,39 @@
     :apply-classes client.css.core/composed-classes
     :watch?        true
     #_#_:dry-run? true}}
+  :css-prod
+  {; clojure -X:css-prod
+   :extra-deps {girouette/processor {:mvn/version "0.0.7"}}
+   :ns-default girouette.processor
+   :exec-fn    process
+   :exec-args
+   {:css           {:output-file "resources/client/public/css/compiled/main.css"}
+    :garden-fn     client.css.grammer/class-name->garden
+    :apply-classes client.css.core/composed-classes
+    #_#_:dry-run? true}}
 
   ;; native-image --initialize-at-build-time --enable-url-protocols=http --report-unsupported-elements-at-runtime --allow-incomplete-classpath --no-fallback --no-server -H:ConfigurationResourceRoots=resources -H:ResourceConfigurationFiles=resource-config.json -H:Name=target/devtool -jar target/client.jar
   ;; clojure -X:native-image --verbose
   :native-image
-  {:main-opts ["-m" "clj.native-image" "server.core"
-               "-jar target/client.jar"
-               "--initialize-at-build-time"
-               "--link-at-build-time"
-               "--enable-url-protocols=http"
+  {:main-opts ["-m" "clj.native-image"
                "--report-unsupported-elements-at-runtime"
                "--no-fallback"
                "--no-server"
+               "--link-at-build-time"
+               "--enable-url-protocols=http"
+               "-H:+ExitAfterRelocatableImageWrite"
+               "-H:+ReportExceptionStackTraces"
+               "-H:+RemoveSaturatedTypeFlows"
+               "-Djdk.internal.lambda.eagerlyInitialize=false"
+               "-J-Dclojure.spec.skip-macros=true"
+               "-J-Xmx20G"
+               "-J-Dclojure.compiler.direct-linking=true"
+               "-J-Dtech.v3.datatype.graal-native=true"
+               "-H:+UseCAPCache"
                "-H:ConfigurationResourceRoots=resources"
                "-H:ResourceConfigurationFiles=resource-config.json"
-               "-H:Name=target/devtool"]
+               "-H:Name=target/devtool"
+               "-jar target/client.jar"]
    :jvm-opts  ["-Dclojure.compiler.direct-linking=true"]
    :extra-deps
    {clj.native-image/clj.native-image
@@ -77,7 +101,27 @@
   ;; clojure -X:uberjar
   :uberjar
   {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+   :ns-default   hf.depstar
+   :aliases      [:graal-compile]
    :exec-fn      hf.depstar/uberjar
-   :exec-args    {:jar        "target/client.jar"
-                  :main-class server.core
-                  :aot        true}}}}
+   :exec-args    {:group-id    "dev.conflux"
+                  :artifact-id "helios-devtool"
+                  :version     "1.0.0"
+                  :sync-pom    true
+                  :jar         "target/app.jar"
+                  :compile-ns  [server.core]
+                  :main-class  server.core
+                  :verbose     true
+                  :aot         true
+                  :jvm-opts    ["-Dtech.v3.datatype.graal-native=true"
+                                "-Dclojure.compiler.direct-linking=true"
+                                "-Dclojure.spec.skip-macros=true"]
+                  :exclude     ["cljs_devtool.*"
+                                "^clj-kondo.*"
+                                "^cljs.*"
+                                "^client.*"
+                                "^lib.*"
+                                "^portal.cljs"
+                                "^user.cljs"
+                                "^x.*"
+                                "^swagger-ui.*"]}}}}
